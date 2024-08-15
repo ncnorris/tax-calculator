@@ -1,0 +1,115 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e8f0fe;
+}
+
+header {
+    background-color: #00796b; /* Blue-green color */
+    color: white;
+    padding: 1em;
+    text-align: center;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    padding: 1em;
+}
+
+form {
+    background-color: white;
+    padding: 2em;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+    margin-top: 2em;
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+form .section {
+    margin-bottom: 2em;
+}
+
+form .section h2 {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.form-row {
+    margin-bottom: 1em;
+    display: flex;
+    align-items: center;
+}
+
+.form-row label {
+    flex: 1;
+    margin-right: 1em;
+}
+
+.form-row input,
+.form-row select {
+    flex: 2;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+/* Remove up and down arrows from number inputs */
+input[type="number"] {
+    -webkit-appearance: none; /* Chrome, Safari, and newer versions of Edge */
+    -moz-appearance: textfield; /* Firefox */
+    appearance: none; /* Standard */
+    margin: 0;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"]::-moz-inner-spin-button,
+input[type="number"]::-moz-outer-spin-button {
+    -moz-appearance: none;
+    margin: 0;
+}
+
+button {
+    background-color: #00796b; /* Blue-green color */
+    color: white;
+    padding: 0.5em 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #005f56;
+}
+
+#results {
+    margin-top: 1em;
+    text-align: center;
+}
+
+.result-message {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-top: 1em;
+}
+
+.result-number {
+    display: inline-block;
+    border: 1px solid black;
+    padding: 0.2em 0.5em;
+    background-color: #e8f0fe; /* Match the background color of the website */
+    font-size: 1.5em;
+    color: #00796b; /* Blue-green color */
+}

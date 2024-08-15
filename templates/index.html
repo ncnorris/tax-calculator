@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Tax Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Crypto Tax Calculator</h1>
+    </header>
+    <main>
+        <form id="tax-form" action="/submit" method="post">
+            <div class="section">
+                <h2>Income</h2>
+                <div class="form-row">
+                    <label for="wages">Wages, salaries, tips</label>
+                    <input type="text" id="wages" name="wages">
+                </div>
+                <div class="form-row">
+                    <label for="interest">Taxable interest</label>
+                    <input type="text" id="interest" name="interest">
+                </div>
+                <div class="form-row">
+                    <label for="dividends">Ordinary dividends</label>
+                    <input type="text" id="dividends" name="dividends">
+                </div>
+                <div class="form-row">
+                    <label for="ira-distributions">IRA distributions</label>
+                    <input type="text" id="ira-distributions" name="ira-distributions">
+                </div>
+                <div class="form-row">
+                    <label for="pensions-annuities">Pensions and annuities</label>
+                    <input type="text" id="pensions-annuities" name="pensions-annuities">
+                </div>
+                <div class="form-row">
+                    <label for="social-security">Social security benefits</label>
+                    <input type="text" id="social-security" name="social-security">
+                </div>
+                <div class="form-row">
+                    <label for="short-term-capital-gains">Net short-term capital gains (losses)</label>
+                    <input type="text" id="short-term-capital-gains" name="short-term-capital-gains">
+                </div>
+                <div class="form-row">
+                    <label for="long-term-capital-gains">Net long-term capital gains (losses)</label>
+                    <input type="text" id="long-term-capital-gains" name="long-term-capital-gains">
+                </div>
+                <div class="form-row">
+                    <label for="other-income">Other income</label>
+                    <input type="text" id="other-income" name="other-income">
+                </div>
+            </div>
+            <div class="section">
+                <h2>Deductions</h2>
+                <div class="form-row">
+                    <label for="filing-status">Filing status</label>
+                    <select id="filing-status" name="filing-status">
+                        <option value="single">Single</option>
+                        <option value="married-joint">Married filing jointly</option>
+                        <option value="married-separate">Married filing separately</option>
+                        <option value="head-household">Head of household</option>
+                        <option value="widow">Qualifying widow(er)</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="qualified-business-income">Qualified business income deduction</label>
+                    <input type="text" id="qualified-business-income" name="qualified-business-income">
+                </div>
+            </div>
+            <div class="section">
+                <h2>Tax Credits</h2>
+                <div class="form-row">
+                    <label for="num-qualifying-children">Number of qualifying children (under 17)</label>
+                    <select id="num-qualifying-children" name="num-qualifying-children">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="custom">More...</option>
+                    </select>
+                    <input type="number" id="custom-qualifying-children" name="custom-qualifying-children" min="0" style="display:none;">
+                </div>
+                <div class="form-row">
+                    <label for="num-other-dependents">Number of other dependents</label>
+                    <select id="num-other-dependents" name="num-other-dependents">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="custom">More...</option>
+                    </select>
+                    <input type="number" id="custom-other-dependents" name="custom-other-dependents" min="0" style="display:none;">
+                </div>
+            </div>
+            <div class="section">
+                <h2>Payment</h2>
+                <div class="form-row">
+                    <label for="federal-income-tax-withheld">Federal income tax withheld</label>
+                    <input type="text" id="federal-income-tax-withheld" name="federal-income-tax-withheld">
+                </div>
+                <div class="form-row">
+                    <label for="estimated-tax-payments">Estimated tax payments</label>
+                    <input type="text" id="estimated-tax-payments" name="estimated-tax-payments">
+                </div>
+            </div>
+            <button type="submit">Calculate</button>
+            <div id="results">
+                <!-- Results will be displayed here -->
+            </div>
+        </form>
+    </main>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
