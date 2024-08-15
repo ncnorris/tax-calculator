@@ -3,6 +3,8 @@ from calculator import get_standard_deduction, calculate_federal_tax, calculate_
 
 app = Flask(__name__, static_folder='static')
 
+# making this change to see commits
+
 @app.route('/')
 def home():
     return render_template('index.html')
