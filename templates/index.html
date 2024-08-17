@@ -13,6 +13,18 @@
     <main>
         <form id="tax-form" action="/submit" method="post">
             <div class="section">
+                <div class="form-row">
+                    <label for="filing-status">Filing status</label>
+                    <select id="filing-status" name="filing-status">
+                        <option value="single">Single</option>
+                        <option value="married_filing_jointly">Married filing jointly</option>
+                        <option value="married_filing_separately">Married filing separately</option>
+                        <option value="head_of_household">Head of household</option>
+                        <option value="widow">Qualifying widow(er)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="section">
                 <h2>Income</h2>
                 <div class="form-row">
                     <label for="wages">Wages, salaries, tips</label>
@@ -54,14 +66,8 @@
             <div class="section">
                 <h2>Deductions</h2>
                 <div class="form-row">
-                    <label for="filing-status">Filing status</label>
-                    <select id="filing-status" name="filing-status">
-                        <option value="single">Single</option>
-                        <option value="married-joint">Married filing jointly</option>
-                        <option value="married-separate">Married filing separately</option>
-                        <option value="head-household">Head of household</option>
-                        <option value="widow">Qualifying widow(er)</option>
-                    </select>
+                    <label for="itemized_deduction">Itemized deduction</label>
+                    <input type="text" id="itemized_deduction" name="itemized_deduction">
                 </div>
                 <div class="form-row">
                     <label for="qualified-business-income">Qualified business income deduction</label>
@@ -125,6 +131,14 @@
                         <option value="custom">More...</option>
                     </select>
                     <input type="number" id="custom-other-dependents" name="custom-other-dependents" min="0" style="display:none;">
+                </div>
+                <div class="form-row">
+                    <label for="american_opportunity_tax_credit">American opportunity tax credit</label>
+                    <input type="text" id="american_opportunity_tax_credit" name="american_opportunity_tax_credit">
+                </div>
+                <div class="form-row">
+                    <label for="lifetime_learning_credit">Lifetime learning credit</label>
+                    <input type="text" id="lifetime_learning_credit" name="lifetime_learning_credit">
                 </div>
             </div>
             <div class="section">

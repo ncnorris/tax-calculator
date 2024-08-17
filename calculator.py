@@ -1,113 +1,106 @@
-def get_standard_deduction(filing_status):
-    deductions = {
-        'single': 12550,
-        'married-joint': 25100,
-        'married-separate': 12550,
-        'head-household': 18800,
-        'widow': 25100
-    }
-    return deductions.get(filing_status, 0)
+from tax_information import federal_tax_brackets, capital_gains_tax_brackets, deductions, self_employment_tax_rate
 
-def calculate_child_tax_credit(ordinary_income, num_qualifying_children, num_other_dependents, filing_status):
+#2024 standard deduction
+def get_standard_deduction(filing_status):
+    return deductions.get(filing_status)
+
+#Identify treatment of capital gains income / losses
+def capital_gains_treatment(long_term_capital_gains, short_term_capital_gains):
+    capital_gains_as_ordinary_income = 0
+    capital_gains_as_LT = 0
+    net_capital_gains = long_term_capital_gains + short_term_capital_gains
+
+    if long_term_capital_gains >= 0 and short_term_capital_gains >= 0:
+        capital_gains_as_LT = long_term_capital_gains
+        capital_gains_as_ordinary_income = short_term_capital_gains
+    elif long_term_capital_gains >= 0 and short_term_capital_gains <= 0 and net_capital_gains < 0:
+        capital_gains_as_ordinary_income = max(net_capital_gains, -3000)
+    elif long_term_capital_gains >= 0 and short_term_capital_gains <= 0 and net_capital_gains >= 0:
+        capital_gains_as_LT = net_capital_gains
+    else:
+        capital_gains_as_ordinary_income = max(net_capital_gains, -3000)
+
+    return capital_gains_as_ordinary_income, capital_gains_as_LT
+
+#Calculate the capital gains tax rate on capital gains treated as long-term
+def calculate_capital_gains_tax(filing_status, total_taxable_income, capital_gains_as_LT):
+    total_income = total_taxable_income + capital_gains_as_LT
+
+    capital_gains_brackets = capital_gains_tax_brackets.get(filing_status)
+    
+    if capital_gains_brackets is None:
+        raise ValueError("Invalid filing status provided.")
+
+    for CG_income_limit, CG_tax_rate in capital_gains_brackets:
+        if total_income <= CG_income_limit:
+            return capital_gains_as_LT * CG_tax_rate
+
+#Placeholder to include NIIT (Net Income Investment Tax) at some point
+
+def calculate_federal_tax(total_taxable_income, filing_status):
+    if total_taxable_income < 0:
+        raise ValueError("Adjusted gross income cannot be negative.")
+    
+    brackets = federal_tax_brackets.get(filing_status)
+
+    if brackets is None:
+        raise ValueError("Invalid filing status provided.")
+    
+    federal_tax = 0
+    previous_limit = 0
+
+    # Calculate federal tax AND rate based on the brackets
+    for limit, rate in brackets:
+        if total_taxable_income > limit:
+            # Apply tax to the portion within this bracket
+            federal_tax += (limit - previous_limit) * rate
+            previous_limit = limit
+        else:
+            # Apply tax to the remaining income and stop
+            federal_tax += (total_taxable_income - previous_limit) * rate
+            break
+
+    return max(0, federal_tax)
+
+def calculate_self_employment_tax(other_income):
+    return other_income * self_employment_tax_rate
+
+#SCHEDULE 8812 - "Credits for Qualifying Children and Other Dependents"
+def calculate_child_tax_credit_and_other_dependends(num_qualifying_children, num_other_dependents, federal_tax_before_credits, filing_status, adjusted_gross_income):
     if num_qualifying_children < 0 or num_other_dependents < 0:
         raise ValueError("Number of dependents cannot be negative.")
     
-    # Base amounts
-    child_tax_credit_per_child = 2000
-    refundable_child_tax_credit_per_child = 1700
-    other_dependents_credit_per_person = 500
+    child_tax_credit = 0
+    tax_liability_updated_for_child_tax_credit = federal_tax_before_credits
 
-    # Total credits
-    total_child_tax_credit = child_tax_credit_per_child * num_qualifying_children
-    refundable_child_tax_credit = min(refundable_child_tax_credit_per_child * num_qualifying_children, total_child_tax_credit)
-    non_refundable_child_tax_credit = total_child_tax_credit - refundable_child_tax_credit
-    total_other_dependents_credit = other_dependents_credit_per_person * num_other_dependents
+    for _ in range(num_qualifying_children):
+        if tax_liability_updated_for_child_tax_credit >= 2000:
+            child_tax_credit += 2000
+            tax_liability_updated_for_child_tax_credit -= 2000
+        elif tax_liability_updated_for_child_tax_credit >= 1700:
+            child_tax_credit += tax_liability_updated_for_child_tax_credit
+            tax_liability_updated_for_child_tax_credit = 0
+        elif tax_liability_updated_for_child_tax_credit > 0:
+            child_tax_credit += 1700
+            tax_liability_updated_for_child_tax_credit -= tax_liability_updated_for_child_tax_credit
+        else:
+            child_tax_credit += 1700
     
-    # Phase-out thresholds
-    if filing_status == 'married-joint':
+    child_tax_credit += num_other_dependents * 500
+
+    #Apply the phase out restriction for both child tax credit and other dependents credit
+    if filing_status == 'married_filing_jointly':
         phase_out_threshold = 400000
     else:
         phase_out_threshold = 200000
+
+    if adjusted_gross_income > phase_out_threshold:
+        phase_out_amount = ((adjusted_gross_income - phase_out_threshold) // 1000) * 50
+        child_tax_credit = max(0, child_tax_credit - phase_out_amount)
     
-    if ordinary_income > phase_out_threshold:
-        phase_out_amount = ((ordinary_income - phase_out_threshold) // 1000) * 50
-        total_child_tax_credit = max(0, total_child_tax_credit - phase_out_amount)
-        refundable_child_tax_credit = min(refundable_child_tax_credit, total_child_tax_credit)
-        non_refundable_child_tax_credit = total_child_tax_credit - refundable_child_tax_credit
-        total_other_dependents_credit = max(0, total_other_dependents_credit - phase_out_amount)
-    
-    total_credit = total_child_tax_credit + total_other_dependents_credit
-
-    return {
-        'total_credit': total_credit,
-        'refundable_credit': refundable_child_tax_credit,
-        'non_refundable_credit': non_refundable_child_tax_credit + total_other_dependents_credit
-    }
-
-def calculate_federal_tax(ordinary_income, short_term_capital_gains, long_term_capital_gains, num_qualifying_children, num_other_dependents, filing_status):
-    if ordinary_income < 0:
-        raise ValueError("Taxable income cannot be negative.")
-    
-    # Net short-term and long-term capital gains/losses
-    net_capital_gain = short_term_capital_gains + long_term_capital_gains
-    
-    if net_capital_gain > 0:
-        if short_term_capital_gains > 0:
-            total_income = ordinary_income + net_capital_gain
-        else:
-            total_income = ordinary_income
-    else:
-        total_income = ordinary_income + min(net_capital_gain, -3000)
-
-    # Tax calculation for ordinary income and short-term capital gains (losses)
-    tax = 0
-    if total_income <= 9875:
-        tax += total_income * 0.10
-    elif total_income <= 40125:
-        tax += 987.5 + (total_income - 9875) * 0.12
-    elif total_income <= 85525:
-        tax += 4617.5 + (total_income - 40125) * 0.22
-    elif total_income <= 163300:
-        tax += 14605.5 + (total_income - 85525) * 0.24
-    elif total_income <= 207350:
-        tax += 33271.5 + (total_income - 163300) * 0.32
-    elif total_income <= 518400:
-        tax += 47367.5 + (total_income - 207350) * 0.35
-    else:
-        tax += 156235 + (total_income - 518400) * 0.37
-
-    # Apply long-term capital gain rates if applicable
-    if net_capital_gain > 0 and short_term_capital_gains <= 0:
-        if net_capital_gain <= 40000:
-            tax += net_capital_gain * 0.0
-        elif net_capital_gain <= 441450:
-            tax += (net_capital_gain - 40000) * 0.15
-        else:
-            tax += (441450 - 40000) * 0.15 + (net_capital_gain - 441450) * 0.20
-
-    # Calculate the Child Tax Credit
-    credits = calculate_child_tax_credit(ordinary_income, num_qualifying_children, num_other_dependents, filing_status)
-
-    # Initialize tracking for refundable and non-refundable credits
-    non_refundable_credit_used = 0
-    refundable_credit_applied = 0
-
-    for _ in range(num_qualifying_children):
-        if tax > 0:
-            # Apply the non-refundable portion ($2,000 per child)
-            if tax >= 2000:
-                tax -= 2000
-                non_refundable_credit_used += 2000
-            else:
-                non_refundable_credit_used += tax
-                tax = 0
-        else:
-            # Apply the refundable portion ($1,700 per child)
-            refundable_credit_applied += 1700
-
-    return max(0, tax), refundable_credit_applied
-
-def calculate_state_tax(income):
-    if income < 0:
-        raise ValueError("Income cannot be negative.")
-    return income * 0.05
+    return child_tax_credit
+   
+# def calculate_state_tax(total_taxable_income):
+#     if total_taxable_income < 0:
+#         raise ValueError("Income cannot be negative.")
+#     return total_taxable_income * 0.0315

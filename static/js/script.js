@@ -69,23 +69,24 @@ document.getElementById('tax-form').addEventListener('submit', function(event) {
         const resultsDiv = document.getElementById('results');
         let resultMessage = '';
         let resultNumber = '';
-
+    
         const formatNumber = (number) => {
             return number.toLocaleString(); // Formats number with commas
         };
-
-        if (data.tax_liability > 0) {
+    
+        if (data.tax_liability && data.tax_liability > 0) {
             resultNumber = `$${formatNumber(Math.round(data.tax_liability))}`;
-            resultMessage = `We estimate a tax liability of <span class="result-number" style="color: maroon;">${resultNumber}</span>`;
-        } else if (data.tax_savings > 0) {
-            resultNumber = `$${formatNumber(Math.round(data.tax_savings))}`;
-            resultMessage = `We estimate a tax refund of <span class="result-number" style="color: #00796b;">${resultNumber}</span>`;
+            resultMessage = `We estimate a tax liability of   <span class="result-number" style="color: maroon;">${resultNumber}</span>`;
+        } else if (data.tax_refund && data.tax_refund > 0) {
+            resultNumber = `$${formatNumber(Math.round(data.tax_refund))}`;
+            resultMessage = `We estimate a tax refund of   <span class="result-number" style="color: #00796b;">${resultNumber}</span>`;
         } else {
             resultMessage = 'We estimate no tax liability or refund.';
         }
-
+    
         resultsDiv.innerHTML = `<p class="result-message" style="color: black;">${resultMessage}</p>`;
     })
+    
     .catch(error => console.error('Error:', error));
 });
 
