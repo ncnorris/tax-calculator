@@ -113,3 +113,52 @@ button:hover {
     font-size: 1.5em;
     color: #00796b; /* Blue-green color */
 }
+
+/* Style for the info icon */
+.info-icon {
+    font-family: Arial, sans-serif;
+    background-color: #C9DFDD; /* Updated background color */
+    border-radius: 50%; /* Ensures a perfect circle */
+    padding: 5px; /* Increased padding for better proportions */
+    font-size: 10px; /* Slightly larger font for clarity */
+    cursor: pointer;
+    margin-left: 8px;
+    color: #00796b; /* White text */
+    border: 2px solid #C9DFDD; /* Updated border color */
+    display: inline-block;
+    width: 3px; /* Fixed width */
+    height: 3px; /* Fixed height to match width */
+    text-align: center; /* Center the "i" inside the circle */
+    font-weight: bold;
+    line-height: 3px; /* Adjust line height for better centering */
+    position: relative;
+}
+
+/* Tooltip container */
+.info-icon::after {
+    content: attr(data-tooltip);
+    display: none;
+    background-color: #00796b; /* Blue-green color for tooltip */
+    color: #fff; /* White text */
+    text-align: left; /* Left-align text */
+    border-radius: 5px;
+    padding: 10px; /* Add padding for space around the text */
+    position: absolute;
+    top: 50%;
+    left: 105%; /* Positioned to the right of the icon */
+    transform: translateY(-50%);
+    white-space: pre-line;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s;
+    width: 400px; /* Explicitly set width for the tooltip */
+    max-width: none; /* Remove max-width constraints */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    line-height: 1.4; /* Improve readability with line height */
+}
+
+/* Show the tooltip on hover */
+.info-icon:hover::after {
+    display: block;
+    opacity: 1;
+}
